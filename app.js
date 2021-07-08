@@ -204,7 +204,6 @@ io.on("connection", (socket) => {
           delete userSoIdToId[userId[selfId]];
           delete userWantToConnect[selfId];
           socket.emit("you are disconnected", "self disconnected");
-          console.log("hit");
         }
         // console.log("discconnect");
         socket.emit("you are disconnected", "self disconnected");
@@ -366,7 +365,6 @@ io.of("/group").on("connection", (socket, next) => {
           video: true,
         });
         eventData[eventId] = filterData;
-        console.log("member", filterData);
       } else {
         eventData[eventId] = [];
         eventData[eventId]?.push({
@@ -393,7 +391,6 @@ io.of("/group").on("connection", (socket, next) => {
   socket.on("member_send_signal", (payload) => {
     try {
       const { signal, sendToSoId, selfUid, type, eventUid, name } = payload;
-      // console.log(payload.type);
       if (type === "member") {
         const data = eventData[eventUid]?.find((data) => data.uid === selfUid);
         socket.to(sendToSoId).emit("creat_peer_send_to_member", {
@@ -447,7 +444,6 @@ io.of("/group").on("connection", (socket, next) => {
       const memberOnly = eventData?.[eventUid]?.filter(
         (data) => data.type === "member"
       );
-      console.log("user", memberOnly);
       // event is going on
       memberOnly?.forEach((user) => {
         socket.to(user.soId).emit("user_request_to_create_peer", {
@@ -478,12 +474,9 @@ io.of("/group").on("connection", (socket, next) => {
   });
   socket.on("disconnect", () => {
     try {
-      // console.log(allUserData[socket.id]);
       const event = allUserData?.[socket.id]?.connectedEvent;
       const leaveUserUid = allUserData?.[socket.id]?.uid;
       if (allUserData[socket.id]) {
-        // console.log(event);
-
         if (allUserData[socket.id].type === "user") {
           const onlyMember = eventData[event]?.filter(
             (user) => user.type !== "user"
@@ -666,17 +659,13 @@ io.of("/groupUpdate").on("connection", (socket, next) => {
   socket.on("check_he_is_requested", (payload) => {
     try {
       const { hostId, memberId, name } = payload;
-      console.log(socket.id);
       if (groupRequest[hostId]) {
         const check = groupRequest[hostId]?.find((id) => id === memberId);
 
         if (check) {
-          console.log(check);
           //check he is requested or not
           socket.emit("member_request_true", { request: true }); //meeting all data
         }
-
-        console.log(memberData[memberId]);
       }
       // still do not have host only speaker member record here
       memberData[memberId] = {
